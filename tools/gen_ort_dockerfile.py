@@ -106,13 +106,13 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
         df += """
 # The manylinux container defaults to Python 3.7, but some feature installation
 # requires a higher version.
-ARG PYVER=3.12
-ENV PYTHONPATH=/opt/python/v
-RUN ln -sf /opt/python/cp${PYVER/./}* ${PYTHONPATH}
-
-ENV PYBIN=${PYTHONPATH}/bin
-ENV PYTHON_BIN_PATH=${PYBIN}/python${PYVER} \
-    PATH=${PYBIN}:${PATH}
+# ARG PYVER=3.12
+# ENV PYTHONPATH=/opt/python/v
+# RUN ln -sf /opt/python/cp${PYVER/./}* ${PYTHONPATH}
+# 
+# ENV PYBIN=${PYTHONPATH}/bin
+# ENV PYTHON_BIN_PATH=${PYBIN}/python${PYVER} \
+#     PATH=${PYBIN}:${PATH}
 
 RUN yum install -y \
         wget \
