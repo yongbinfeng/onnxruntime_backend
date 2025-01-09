@@ -560,7 +560,7 @@ def preprocess_gpu_flags():
     else:
         if "CUDNN_VERSION" in os.environ:
             version = None
-            m = re.match(r"([0-9]\.[0-9])\.[0-9]\.[0-9]", os.environ["CUDNN_VERSION"])
+            m = re.match(r"([0-9]\.[0-9])\.[0-9]", os.environ["CUDNN_VERSION"])
             if m:
                 version = m.group(1)
             if FLAGS.cudnn_home is None:
