@@ -284,6 +284,8 @@ RUN git clone -b rel-${ONNXRUNTIME_VERSION} --recursive ${ONNXRUNTIME_REPO} onnx
         cuda_archs = "53;62;72;87"
     else:
         cuda_archs = "75;80;86;90"
+    
+    ep_flags += " --cmake_extra_defines CMAKE_C_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/gcc --cmake_extra_defines CMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/g++"
 
     df += """
 WORKDIR /workspace/onnxruntime
@@ -472,7 +474,7 @@ RUN git clone -b rel-%ONNXRUNTIME_VERSION% --recursive %ONNXRUNTIME_REPO% onnxru
             if FLAGS.tensorrt_home is not None:
                 ep_flags += ' --tensorrt_home "{}"'.format(FLAGS.tensorrt_home)
     if FLAGS.ort_openvino is not None:
-        ep_flags += " --use_openvino CPU"
+        ep_flags += " --use_openvino CPU" 
 
     df += """
 WORKDIR /workspace/onnxruntime
