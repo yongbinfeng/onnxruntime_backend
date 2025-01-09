@@ -285,7 +285,7 @@ RUN git clone -b rel-${ONNXRUNTIME_VERSION} --recursive ${ONNXRUNTIME_REPO} onnx
     else:
         cuda_archs = "75;80;86;90"
     
-    ep_flags += " --cmake_extra_defines CMAKE_C_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/gcc --cmake_extra_defines CMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/g++"
+    ep_flags += " --cmake_extra_defines CMAKE_C_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/gcc --cmake_extra_defines CMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-9/root/usr/bin/g++ --cmake_extra_defines CMAKE_VERBOSE_MAKEFILE=ON"
 
     df += """
 WORKDIR /workspace/onnxruntime
