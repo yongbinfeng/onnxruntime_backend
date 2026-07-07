@@ -171,7 +171,19 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
     if target_platform() == "rhel":
         df += """
 
-RUN dnf install -y \\
+# RHEL-family build fixes (this container is built on a stock CUDA
+# rockylinux image, so it must provision its own toolchain quirks):
+#  - --allowerasing: full curl conflicts with the curl-minimal shipped
+#    in RHEL9-family base images.
+#  - patch/diffutils: required by ONNXRuntime's CMake FetchContent.
+#  - gcc-toolset-13-binutils: the base binutils 2.35 assembler cannot
+#    encode the AVX-VNNI instruction (vpdpbusds) used by ORT's MLAS
+#    kernels; use its `as` (2.40) instead.
+#  - point python3/pip3 at 3.12: this container's build.sh runs `python3`
+#    and ORT's build scripts use match-statements (need Python >= 3.10),
+#    while the RHEL base default is 3.9. dnf keeps working because it uses
+#    an explicit /usr/bin/python3.9 shebang, not the python3 symlink.
+RUN dnf install -y --allowerasing \\
         ca-certificates \\
         curl \\
         git \\
@@ -180,7 +192,13 @@ RUN dnf install -y \\
         python3.12-devel \\
         python3.12-pip \\
         wget \\
-        zip
+        zip \\
+        patch \\
+        diffutils \\
+        gcc-toolset-13-binutils \\
+    && ln -sf /usr/bin/python3.12 /usr/bin/python3 \\
+    && ln -sf /usr/bin/pip3.12 /usr/bin/pip3 \\
+    && ln -sf /opt/rh/gcc-toolset-13/root/usr/bin/as /usr/bin/as
 
 RUN pip3 install \\
        cmake==4.0.3 \\
@@ -189,6 +207,14 @@ RUN pip3 install \\
        patchelf==0.17.2 \\
        wheel>=0.35.1
 
+"""
+
+        # cuDNN is only needed to build ONNXRuntime's CUDA execution provider.
+        # Installed from the CUDA repo already configured in the nvidia/cuda
+        # base image; headers+libs land under /usr, i.e. --cudnn-home=/usr.
+        if FLAGS.enable_gpu:
+            df += """
+RUN dnf install -y cudnn
 """
 
         if os.getenv("CCACHE_REMOTE_ONLY") and os.getenv("CCACHE_REMOTE_STORAGE"):
